@@ -131,3 +131,5 @@ for num in tamanhos:
     print(f"Tamanho da lista : {num}")
     print(f"Tempo médio : {acumulador/50:.8f}")
     print()
+
+    
