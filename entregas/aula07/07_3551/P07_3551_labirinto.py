@@ -3,7 +3,6 @@ room = " "
 wall = "W"
 cheese = "*"
 
-
 def print_maze(maze):
     """Imprime o labirinto no terminal, uma linha por vez.
 
