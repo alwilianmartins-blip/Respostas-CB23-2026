@@ -149,7 +149,7 @@ if __name__ == '__main__':
     
     room2 = " "
     wall2 = "X"
-    cheese2 = "9"
+    cheese2 = "+"
     maze2 = dfs(m, n, room2, wall2 ,cheese2)
 
     print('Maze 2')
@@ -161,4 +161,4 @@ if __name__ == '__main__':
 
     caminho2 = find_cheese(maze2, wall2, cheese2)
 
-    mostrar_caminho(maze2, caminho2, 6)
+    mostrar_caminho(maze2, caminho2, "°")
