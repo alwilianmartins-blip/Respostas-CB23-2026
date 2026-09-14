@@ -12,7 +12,7 @@ def print_maze(maze):
     for row in maze:
         print(" ".join(map(str, row)))
 
-def dfs(m, n, room = " ", wall = " W", cheese = "."):
+def dfs(m, n, room = " ", wall = "W", cheese = "."):
 
     """Cria um labirinto perfeito de modo iterativo
     Gera um labirinto perfeito de m X n células usando DFS com backtracking.
@@ -80,7 +80,7 @@ def dfs(m, n, room = " ", wall = " W", cheese = "."):
     return maze
 
 
-def find_cheese(maze,visitado = None, x= 1, y = 1, caminho = None):
+def find_cheese(maze,wall = "W", cheese = ".", visitado = None, x= 1, y = 1, caminho = None):
 
     if caminho is None:
              caminho = []
@@ -104,7 +104,7 @@ def find_cheese(maze,visitado = None, x= 1, y = 1, caminho = None):
         nx, ny = x + dx, y+dy
 
         if 0 <= nx < len(maze) and 0 <= ny < len(maze[0]):
-             resultado =  find_cheese(maze, visitado, nx, ny, caminho)
+             resultado =  find_cheese(maze, wall, cheese, visitado, nx, ny, caminho)
 
              if resultado is not None:
                   return resultado
@@ -114,13 +114,13 @@ def find_cheese(maze,visitado = None, x= 1, y = 1, caminho = None):
 
 
 
-def mostrar_caminho(maze, caminho):
+def mostrar_caminho(maze, caminho, marcacao = "-"):
 
 
      for item in caminho:
           x, y = item[0], item[1]
 
-          maze[x][y] = "-"
+          maze[x][y] = marcacao
 
      print_maze(maze)
 
@@ -128,7 +128,6 @@ def mostrar_caminho(maze, caminho):
 
 if __name__ == '__main__':
     m, n = 10, 14  # Grid size
-    random.seed(10110)
 
     room = " "
     wall = "W"
@@ -139,10 +138,27 @@ if __name__ == '__main__':
 
     print()
 
-    caminho = find_cheese(maze)
+    caminho = find_cheese(maze, wall, cheese)
 
-    print("Caminho para o queijo")
+    print("Caminho para o queijo Maze 1")
 
-    mostrar_caminho(maze, caminho)
+    mostrar_caminho(maze, caminho, "&")
 
+    #Segundo Teste
+    print()
     
+    room2 = " "
+    wall2 = "X"
+    cheese2 = "9"
+    maze2 = dfs(m, n, room2, wall2 ,cheese2)
+
+    print('Maze 2')
+
+    print_maze(maze2)
+    print()
+
+    print("Caminho 2 para o queijo \n")
+
+    caminho2 = find_cheese(maze2, wall2, cheese2)
+
+    mostrar_caminho(maze2, caminho2, 6)
