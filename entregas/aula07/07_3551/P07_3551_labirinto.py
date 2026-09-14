@@ -1,7 +1,5 @@
 import random
-room = " "
-wall = "W"
-cheese = "*"
+
 
 def print_maze(maze):
     """Imprime o labirinto no terminal, uma linha por vez.
@@ -16,6 +14,30 @@ def print_maze(maze):
 
 def dfs(m, n, room = " ", wall = " W", cheese = "*"):
 
+    """Cria um labirinto perfeito de modo iterativo
+    Gera um labirinto perfeito de m X n células usando DFS com backtracking.
+
+    Parameters
+    ----------
+    m : int
+        Número de linhas da grade lógica.
+    n : int
+        Número de colunas da grade lógica.
+    room : int or str, optional
+        Valor usado para representar passagens abertas. Padrão: 0.
+    wall : int or str, optional
+        Valor usado para representar paredes. Padrão: 1.
+    cheese : str, optional
+        Símbolo colocado aleatoriamente em uma sala como objetivo. Padrão: '.'.
+
+    Returns
+    -------
+    list[list]
+        Matriz (2m+1) X (2n+1) representando o labirinto gerado.
+    """
+    
+
+
     # Inicializa a matriz expandida com todas as células como parede
     maze = [[wall] * (2 * n + 1) for _ in range(2 * m + 1)]
 
@@ -23,7 +45,7 @@ def dfs(m, n, room = " ", wall = " W", cheese = "*"):
     stack = [(0,0)]
     maze[0][0] = room
 
-    while len(stack) != 0:
+    while len(stack) != 0: #o laço é executado até que a pilha não esteja vazia
 
         x, y = stack.pop()
 
@@ -31,20 +53,21 @@ def dfs(m, n, room = " ", wall = " W", cheese = "*"):
         random.shuffle(directions) # Embaralha as direções para o labirinto ser aleatório
 
         for dx, dy in directions:
+                
+                nx, ny = x + dx, y+dy # move o ponto para Norte, Sul, Leste ou Oeste
 
-                nx, ny = x + dx, y+dy 
+                if 0 <= nx <m and 0 <= ny < n and maze[2*nx+1][2*ny+1] == wall: #verifica que os índices estão nos limites e se o ponto visitado é uma parede
 
-                if 0 <= nx <m and 0 <= ny < n and maze[2*nx+1][2*ny+1] == wall:
+                     stack.append((x,y)) #adiciona na pilha o último ponto visitado
 
-                     stack.append((x,y))
-
-                     stack.append((nx,ny))
+                     stack.append((nx,ny)) #adiciona na pilha o último ponto
 
                      maze[2*x+1+dx][2*y+1+dy] = room
 
                      maze[2*nx+1][2*ny+1] = room
 
                      break
+                
 
     while True:
          i = int(random.uniform(0,2*m))
