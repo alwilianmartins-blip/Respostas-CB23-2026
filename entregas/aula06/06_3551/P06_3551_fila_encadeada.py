@@ -1,7 +1,7 @@
 import importlib
 
-modulo = importlib.import_module("06_3551_pilha_encadeada")
-PilhaEncadeada = modulo.ListaEncadeada
+modulo = importlib.import_module("P06_3551_pilha_encadeada")  
+PilhaEncadeada = modulo.PilhaEncadeada  
 
 
 class FilaEncadeada:
@@ -17,7 +17,7 @@ class FilaEncadeada:
          """Retorna True quando não há elementos armazenados.
          Complexidade O(1)"""
 
-         return self.fila_entrada._esta_vazia() and self.fila_saida._esta_vazia()
+         return self.fila_entrada.esta_vazia() and self.fila_saida.esta_vazia() 
 
 
     def enfileirar(self, item):
@@ -29,23 +29,25 @@ class FilaEncadeada:
 
     def _transferir(self):
 
-        """Metodo Auxiliar interno"""
+        """Método auxiliar interno: move todos os elementos da fila_entrada para a fila_saida
+        quando a fila_saida está vazia.
+        Complexidade O(1) amortizada; O(N) no pior caso (quando a fila_saida está vazia)"""  
 
-        if self.fila_saida._esta_vazia():
-                    while not self.fila_entrada._esta_vazia():
+        if self.fila_saida.esta_vazia(): 
+                    while not self.fila_entrada.esta_vazia(): 
                         elemento = self.fila_entrada.pop()
                         self.fila_saida.push(elemento)
 
 
     def desenfileirar(self):
 
-        """"Remove e retorna o item da frente; levanta IndexError se a fila estiver vazia.
+        """Remove e retorna o item da frente; levanta IndexError se a fila estiver vazia.
         Complexidade O(1) amortizada (caso médio)
 """
 
         self._transferir()
         
-        if self.fila_saida._esta_vazia():
+        if self.fila_saida.esta_vazia():  
             raise IndexError("A fila está vazia")
 
         return self.fila_saida.pop()
@@ -58,10 +60,10 @@ class FilaEncadeada:
 
          self._transferir()
 
-         if self.fila_saida._esta_vazia():
+         if self.fila_saida.esta_vazia(): 
               raise IndexError("Fila Vazia")
 
-         return self.fila_saida._topo()
+         return self.fila_saida.topo()  
 
     def __len__(self):
 

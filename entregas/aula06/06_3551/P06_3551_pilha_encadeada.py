@@ -1,11 +1,10 @@
-class ListaEncadeada:
+class PilhaEncadeada:  # corrigido: nome da classe (era ListaEncadeada)
 
-    """" Implementa Lista Encadeada"""
-    
+    """Implementa Pilha Encadeada""" 
 
 
     class _No:
-        """"Implementa nó de lista encadeada"""
+        """Implementa nó de lista encadeada""" 
         def __init__(self, valor, proximo = None):
             self.valor = valor
             self.proximo = proximo
@@ -37,7 +36,7 @@ class ListaEncadeada:
 
         return self.comprimento
 
-    def _esta_vazia(self):
+    def esta_vazia(self): 
 
         """Retorna True quando não há elementos armazenados.
         complexidade O(1)"""
@@ -48,13 +47,13 @@ class ListaEncadeada:
             return False
 
 
-    def _topo(self):
+    def topo(self): 
 
         """Retorna o item do topo sem removê-lo; levanta IndexError se a pilha estiver vazia.
         complexidade O(1)"""
 
         if self.comprimento == 0:
-            raise IndexError("A pila está vazia")
+            raise IndexError("A pilha está vazia") 
         else:
             return self.primeirono.valor
     
@@ -64,8 +63,7 @@ class ListaEncadeada:
         complexidade O(1)"""
 
         if self.comprimento == 0:
-            raise IndexError("pop from empty list")
-
+            raise IndexError("pop from empty pilha") 
         item = self.primeirono.valor
         self.primeirono = self.primeirono.proximo
         self.comprimento -=1 
@@ -79,4 +77,3 @@ class ListaEncadeada:
         novo_no = self._No(valor, self.primeirono)
         self.primeirono = novo_no
         self.comprimento +=1
-

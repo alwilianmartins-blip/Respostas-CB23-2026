@@ -1,18 +1,13 @@
-import importlib
 
-
-modulo_pilha = importlib.import_module("06_3551_pilha_encadeada")
-PilhaEncadeada = modulo_pilha.ListaEncadeada
-
-modulo_fila = importlib.import_module("06_3551_fila_encadeada")
-FilaEncadeada = modulo_fila.FilaEncadeada
+from P06_3551_fila_encadeada import FilaEncadeada
+from P06_3551_pilha_encadeada import PilhaEncadeada
 
 def unittest():
 
     pilha = PilhaEncadeada()
 
     print("\nTestes da Pilha")
-    print(pilha._esta_vazia())
+    print(pilha.esta_vazia())
     print(len(pilha))
     
     pilha.push(10)
@@ -20,17 +15,17 @@ def unittest():
     pilha.push(True)
     pilha.push(None)
     
-    print(pilha._esta_vazia())
+    print(pilha.esta_vazia())
     print(len(pilha))
     print(repr(pilha))
     
-    print(pilha._topo())
+    print(pilha.topo())
     print(pilha.pop())
-    print(pilha._topo())
+    print(pilha.topo())
     print(pilha.pop())
     print(pilha.pop())
     print(pilha.pop())
-    print(pilha._esta_vazia())
+    print(pilha.esta_vazia())
 
     # Mais testes da Pilha (Intercalando tipos diferentes e push/pop repetidos)
     pilha.push(3.1415)
@@ -42,7 +37,7 @@ def unittest():
     print(repr(pilha))
     
     print(pilha.pop())
-    print(pilha._topo())
+    print(pilha.topo())
     
     pilha.push("novo_topo")
     print(repr(pilha))
@@ -52,7 +47,7 @@ def unittest():
     print(pilha.pop())
     print(pilha.pop())
     print(pilha.pop())
-    print(pilha._esta_vazia())
+    print(pilha.esta_vazia())
 
     print("\nTestes da Fila")
     fila = FilaEncadeada()
