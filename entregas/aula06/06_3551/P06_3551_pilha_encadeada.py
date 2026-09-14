@@ -1,4 +1,4 @@
-class PilhaEncadeada:  # corrigido: nome da classe (era ListaEncadeada)
+class PilhaEncadeada:  
 
     """Implementa Pilha Encadeada""" 
 
