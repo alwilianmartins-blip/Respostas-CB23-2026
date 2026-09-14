@@ -27,8 +27,8 @@ a complexidade é O(N)
 # FILA CONSTRUÍDA SOBRE A PILHA
 
 ## enfileirar(item): Complexidade O(1)
-Sua operação é insierir um elemento na fila, 
-para isso acessa diretamente um enderço na memória da fila, logo a execução de tempo é constante
+Sua operação é inserir um elemento na fila, 
+para isso acessa diretamente um endereço na memória da fila, logo a execução de tempo é constante
 
 ## desenfileirar(): Complexidade O(1) amortizada (caso médio) 
 Como cada elemento é transferido entre as duas pilhas exatamente uma única vez durante sua existência, o custo total para N elementos é 4N, ao dividir o tempo de N operações o custo médio é O(1)
