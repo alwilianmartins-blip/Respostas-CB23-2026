@@ -12,7 +12,7 @@ def print_maze(maze):
     for row in maze:
         print(" ".join(map(str, row)))
 
-def dfs(m, n, room = " ", wall = " W", cheese = "*"):
+def dfs(m, n, room = " ", wall = " W", cheese = "."):
 
     """Cria um labirinto perfeito de modo iterativo
     Gera um labirinto perfeito de m X n células usando DFS com backtracking.
