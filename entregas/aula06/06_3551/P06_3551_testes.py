@@ -129,3 +129,5 @@ class TestFilaEncadeada(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+"""Declaro o uso de IA como apoio para fazer essa atividade. Promtp : Ajude a criar um teste altomatizado para esses arquivos"""
