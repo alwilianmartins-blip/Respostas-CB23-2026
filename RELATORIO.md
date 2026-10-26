@@ -1,8 +1,6 @@
-<<<<<<< HEAD
+
 # Relatório — Wilian Martins da Silva (3551)
-=======
-# Relatório — <Wilian Martins da Silva> (3551)
->>>>>>> da03db36e70bcda7d3abf5944ceec2b439d1deda
+
 
 Relatório do projeto, preenchido na sua branch. Cada marco acrescenta a sua seção. Responda com as suas palavras e com
 os números da sua execução; cada resposta cabe em até 6 linhas, além das tabelas.
