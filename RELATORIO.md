@@ -22,11 +22,11 @@ Devolver as linhas descartadas permite que o sistema seja auditado. Se o `ler_lo
 
 ### R3 — Late binding
 
-A versão `errados["PT102"](4095)` dá 409.5 porque o Python avalia a variável `k` apenas quando a lambda é chamada (*late binding*), usando o último valor assumido no laço (0.1)[cite: 15]. A nossa `criar_conversores` resolve isto com um argumento padrão (`fator=fator`), forçando a avaliação imediata (*early binding*) na criação da lambda.
+A versão `errados["PT102"](4095)` dá 409.5 porque o Python avalia a variável `k` apenas quando a lambda é chamada (*late binding*), usando o último valor assumido no laço (0.1). A nossa `criar_conversores` resolve isto com um argumento padrão (`fator=fator`), forçando a avaliação imediata (*early binding*) na criação da lambda.
 
 ### R4 — Escala nominal
 
-A escala nominal resulta em 261.99 kPa contra os 380.00 kPa de referência[cite: 7, 14]. A diferença deve-se ao facto do instrumento `PT102` estar a simular um desvio real (ruído ou falta de calibração) face à equação ideal. A explicação codificada para esta perturbação nos dados encontra-se no ficheiro da base `fornecido/simulador.py`[cite: 15].
+A escala nominal de `PT102` supõe que a pressão é proporcional às contagens (600/4095 kPa por contagem), mas o transmissor não é linear: em `fornecido/simulador.py`, `p_real(c) = 600·sin(0,5·π·c/4095)`, uma curva senoidal. Com 380 kPa o A/D marca cerca de 1788 contagens, e a reta nominal converte isso em 261,99 kPa, mais de 100 kPa abaixo. A hipótese é erro de modelo (não linearidade), e não ruído: por isso a tabela de calibração com interpolação é necessária.
 
 ### R5 — Previsão × medição (Etapa 3)
 
@@ -38,23 +38,23 @@ Previsões registradas no commit: <!-- cole o hash curto do commit de previsões
 | Tempo do laço / tempo vetorizado | [Sua Previsão] | ~ 33.7x (37.33 ms / 1.11 ms) |
 | Tempo da compreensão / tempo do laço | [Sua Previsão] | ~ 1.0x (37.61 ms / 37.33 ms) |
 
-A maior diferença reside na aceleração da versão vetorizada face ao laço (33.7x)[cite: 7], pois o NumPy roda as operações em C compilado, ignorando o *overhead* do interpretador Python. O valor `16364` surge porque 81900 excede o limite do `uint16` (65535), causando um *overflow* ($81900 \pmod{65536} = 16364$)[cite: 7]. Escolheria `uint16` para as contagens A/D e `float32` ou `float64` para pressões em kPa.
+A maior diferença reside na aceleração da versão vetorizada face ao laço (33.7x), pois o NumPy roda as operações em C compilado, ignorando o *overhead* do interpretador Python. O valor `16364` surge porque 81900 excede o limite do `uint16` (65535), causando um *overflow* ($81900 \pmod{65536} = 16364$). Escolheria `uint16` para as contagens A/D e `float32` ou `float64` para pressões em kPa.
 
 ### R6 — Tipos da SerieTemporal (Etapa 4d)
 
 | Expressão | Tipo previsto | Tipo observado |
 | --- | --- | --- |
-| `s + s` | [Sua Previsão] | `SerieTemporal` |
-| `s[1:]` | [Sua Previsão] | `SerieTemporal` |
-| `s * 2` | [Sua Previsão] | `SerieTemporal` |
-| `s.sum()` | [Sua Previsão] | `float` |
-| `s[0]` | [Sua Previsão] | `float` |
+| `s + s` | `SerieTemporal` | `SerieTemporal` |
+| `s[1:]` | `SerieTemporal` | `SerieTemporal` |
+| `s * 2` | `SerieTemporal` | `SerieTemporal` |
+| `s.sum()` | `float.64` | `float` |
+| `s[0]` | `float` | `float` |
 
-O resultado que mais me surpreendeu foi que `s.sum()` e o acesso ao índice `s[0]` devolvem o tipo primitivo `float` do Python[cite: 7, 14], em vez de retornarem uma série unitária ou um tipo nativo do NumPy (como `numpy.float64`).
+O resultado que mais me surpreendeu foi que `s.sum()` e o acesso ao índice `s[0]` devolvem o tipo primitivo `float` do Python, em vez de retornarem uma série unitária ou um tipo nativo do NumPy (como `numpy.float64`).
 
 ### R7 — Issue #4
 
-O sintoma era que o tamanho da série resultante na `media_movel` tinha um valor a menos do que o tamanho matematicamente correto[cite: 15]. O meu teste de regressão é o `test_tamanho_media_movel`. A causa era o uso de `len() - w` no limite do `range`, que exclui a última iteração. A correção foi alterar o iterador para `len(self._valores) - w + 1`[cite: 13]. Os testes de aceitação não falharam porque não faziam validação ao tamanho da lista[cite: 15]. Outro caso que não cobriam era passar um tamanho de janela inválido (ex: `w <= 0`), algo que eu cobri no `test_media_movel_w_invalido`.
+O sintoma era que a `media_movel` devolvia um valor a menos: 570 em vez de 571 para 600 pontos e janela de 30. Os meus testes de regressão são `test_600_pontos_janela_30_devolve_571`, `test_ultima_janela_e_incluida` e `test_janela_do_tamanho_da_serie`. A causa era o limite `len() - w` no `range`, que deixava de fora a última janela; o número de janelas é `len() - w + 1`, e a correção usa `sliding_window_view`, sem laço. Os testes de aceitação não falharam porque só conferiam o tipo do retorno e os erros de janela inválida, nunca o tamanho. Outro caso que eles não cobriam é a janela igual ao tamanho da série (uma única janela), coberto pelo `test_janela_do_tamanho_da_serie`.
 
 ## Marco 2
 
@@ -96,7 +96,7 @@ As duas regras supõem um integrando suave dentro de cada subintervalo; a tarifa
 
 ### R14 — Issue #11
 
-**Testes de regressão** (em `testes/test_marco4.py`, falhavam no código original): `test_malha_irregular_funcao_linear` (deu 3,0625 em vez de 8) e `test_leitura_perdida_na_vazao_constante` (deu 15 em vez de 20).
+**Testes de regressão** (em `testes/test_dia.py`, falhavam no código original): `test_malha_irregular_funcao_linear` (deu 3,0625 em vez de 8) e `test_leitura_perdida_na_vazao_constante` (deu 15 em vez de 20).
 **Causa:** `Trapezio.integrar_tabela` usava `h = x[1] - x[0]` para todos os trapézios, supondo leituras a cada 15 min. Onde o SCADA perdeu leituras o intervalo é de 30 min, mas contava como 15, e esse trecho era subestimado. Com a minha matrícula, o volume do dia saía 3526,7 m³ contra 3888,0 m³ de conferência (erro de 9,29%). A correção usa a largura real de cada trapézio, `Σ np.diff(x)·(y[i]+y[i+1])/2`, e o volume passou a 3877,5 m³ (erro de 0,27%).
 **Por que a aceitação não pegou:** todos os testes dela usam malhas uniformes (`np.arange(…, 1.5)`, `np.linspace`), em que `x[1] - x[0]` é igual a todos os passos; o caso de `vazao_registrada` só era testado quanto ao tamanho.
 **Simpson:** a regra composta exige passo uniforme e número par de subintervalos. O registro tem 89 leituras com intervalos de 15 e 30 min, então a regra não se aplica e `Simpson().integrar_tabela` recusa a tabela com `ValueError`.
