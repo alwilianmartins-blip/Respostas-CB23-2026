@@ -1,4 +1,3 @@
-
 # Relatório — Wilian Martins da Silva (3551)
 
 
@@ -47,7 +46,7 @@ A maior diferença reside na aceleração da versão vetorizada face ao laço (3
 | `s + s` | `SerieTemporal` | `SerieTemporal` |
 | `s[1:]` | `SerieTemporal` | `SerieTemporal` |
 | `s * 2` | `SerieTemporal` | `SerieTemporal` |
-| `s.sum()` | `float.64` | `float` |
+| `s.sum()` | `float64` | `float` |
 | `s[0]` | `float` | `float` |
 
 O resultado que mais me surpreendeu foi que `s.sum()` e o acesso ao índice `s[0]` devolvem o tipo primitivo `float` do Python, em vez de retornarem uma série unitária ou um tipo nativo do NumPy (como `numpy.float64`).
