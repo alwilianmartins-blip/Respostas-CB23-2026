@@ -89,3 +89,16 @@ O Newton falha onde a bissecção não em `f(x) = x³ − 2x + 2` no intervalo `
 Testes de regressão (escritos antes da correção, e que falhavam no código original): `test_regressao_derivada_recalculada_a_cada_iteracao` (a derivada foi avaliada 1 vez em 23 iterações: `1 != 23`) e `test_regressao_colebrook_re_1e4_converge_quadraticamente` (o Newton levava 10 iterações; o limite do teste é 7, e depois da correção são 5).
 Calcular a derivada uma vez só, em `x0`, transforma a iteração em `x_{k+1} = x_k − f(x_k)/f'(x0)`, o método da corda: um ponto fixo cuja derivada na raiz vale `1 − f'(r)/f'(x0)`, que não é zero. O erro então só é multiplicado por uma constante a cada passo (convergência linear). No Newton de verdade `f'` é reavaliada em `x_k` e essa derivada na raiz vale 0, o que dá a convergência quadrática.
 Os testes de aceitação não pegaram o defeito porque só conferem o **valor final** (a raiz e o fator de atrito), que o método da corda também atinge, só que com mais iterações; nenhum deles verifica o número de iterações nem a ordem de convergência.
+
+## Marco 4
+
+### R13 — Integração e descontinuidade
+
+As duas regras supõem um integrando suave dentro de cada subintervalo; a tarifa salta às 18 h e às 21 h. O subintervalo que contém o salto tem erro da ordem de h (e não de h² ou h⁴), e como há um desses subintervalos por salto, o erro global cai como O(h): a ordem observada ficou em 1,00 no trapézio e em 0,65 no Simpson (n = 30 a 110), e o Simpson perde toda a vantagem sobre o trapézio. O erro também varia conforme a posição do salto dentro do subintervalo, o que explica a ordem do Simpson ter saído abaixo de 1 num ajuste com poucos valores de n. Integrando faixa por faixa, a tarifa é constante e o integrando é suave em cada pedaço, e voltam as ordens 2,00 (trapézio) e 4,00 (Simpson), com erro de 8,1e-08 no Simpson em n = 110.
+
+### R14 — Issue #11
+
+**Testes de regressão** (em `testes/test_marco4.py`, falhavam no código original): `test_malha_irregular_funcao_linear` (deu 3,0625 em vez de 8) e `test_leitura_perdida_na_vazao_constante` (deu 15 em vez de 20).
+**Causa:** `Trapezio.integrar_tabela` usava `h = x[1] - x[0]` para todos os trapézios, supondo leituras a cada 15 min. Onde o SCADA perdeu leituras o intervalo é de 30 min, mas contava como 15, e esse trecho era subestimado. Com a minha matrícula, o volume do dia saía 3526,7 m³ contra 3888,0 m³ de conferência (erro de 9,29%). A correção usa a largura real de cada trapézio, `Σ np.diff(x)·(y[i]+y[i+1])/2`, e o volume passou a 3877,5 m³ (erro de 0,27%).
+**Por que a aceitação não pegou:** todos os testes dela usam malhas uniformes (`np.arange(…, 1.5)`, `np.linspace`), em que `x[1] - x[0]` é igual a todos os passos; o caso de `vazao_registrada` só era testado quanto ao tamanho.
+**Simpson:** a regra composta exige passo uniforme e número par de subintervalos. O registro tem 89 leituras com intervalos de 15 e 30 min, então a regra não se aplica e `Simpson().integrar_tabela` recusa a tabela com `ValueError`.
