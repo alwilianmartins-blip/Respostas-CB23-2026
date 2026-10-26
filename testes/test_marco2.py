@@ -24,20 +24,21 @@ class TestMarco2(unittest.TestCase):
 
     def test_02_medir_remocao_espurias(self):
         """2. Verifica se a função medir remove corretamente os valores espúrios pelo z-score (Issue #6)."""
-        curva = CurvaCalibracao([0, 10, 20], [0, 10, 20], "linear")
-        
-        # O valor 1000 (índice 3) é um "outlier" (espúrio) isolado
-        contagens = [10.0, 10.0, 10.0, 1000.0, 10.0, 10.0]
+        # Domínio amplo o bastante para conter a leitura espúria (a curva não extrapola)
+        curva = CurvaCalibracao([0, 1000, 2000], [0, 1000, 2000], "linear")
+
+        # O valor 1000 (índice 3) é espúrio; as demais variam um pouco, para a MAD não ser zero
+        contagens = [9.0, 11.0, 10.0, 1000.0, 10.0, 9.0, 11.0, 10.0]
         registros = [
             Registro(datetime.now(), "INFO", "PT101", {"contagens": c})
             for c in contagens
         ]
-        
+
         resultado = medir(registros, "PT101", curva, u_sistematica=0.0)
-        
+
         self.assertEqual(resultado.espurias, [3])
-        self.assertEqual(resultado.n_validas, 5)
-        self.assertEqual(resultado.medida.valor, 10.0)
+        self.assertEqual(resultado.n_validas, 7)
+        self.assertAlmostEqual(resultado.medida.valor, 10.0)
 
     def test_03_medir_mad_zero(self):
         """3. Verifica o lançamento de ValueError quando a MAD é exatamente zero (Issue #6)."""
